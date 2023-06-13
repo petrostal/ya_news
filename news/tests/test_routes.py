@@ -2,14 +2,39 @@
 from django.test import TestCase
 from http import HTTPStatus
 from django.urls import reverse
+from django.contrib.auth import get_user_model
+
+from news.models import News, Comment
+
+
+User = get_user_model()
 
 
 class TestRoutes(TestCase):
 
-    def test_home_page(self):
-        # Вместо прямого указания адреса 
-        # получаем его при помощи функции reverse().
-        url = reverse('news:home')
-        response = self.client.get(url)
-        # Проверяем, что код ответа равен статусу OK (он же 200).
-        self.assertEqual(response.status_code, HTTPStatus.OK) 
+    @classmethod
+    def setUpTestData(cls):
+        cls.news = News.objects.create(title='Заголовок', text='Текст')
+        # Создаём двух пользователей с разными именами:
+        cls.author = User.objects.create(username='Лев Толстой')
+        cls.reader = User.objects.create(username='Читатель простой')
+        # От имени одного пользователя создаём комментарий к новости:
+        cls.comment = Comment.objects.create(
+            news=cls.news,
+            author=cls.author,
+            text='Текст комментария'
+        )
+
+    def test_pages_availability(self):
+        urls = (
+            ('news:home', None),
+            ('news:detail', (self.news.id,)),
+            ('users:login', None),
+            ('users:logout', None),
+            ('users:signup', None),
+        )
+        for name, args in urls:
+            with self.subTest(name=name):
+                url = reverse(name, args=args)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, HTTPStatus.OK) 
