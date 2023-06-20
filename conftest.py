@@ -2,12 +2,14 @@ import pytest
 
 from news.models import News, Comment
 
-from yanews.settings import LOGIN_URL
+from django.conf import settings
+
+from datetime import datetime, timedelta
 
 
 @pytest.fixture
 def login_url():
-    return LOGIN_URL
+    return settings.LOGIN_URL
 
 
 @pytest.fixture
@@ -46,3 +48,17 @@ def comment(news, author):
 @pytest.fixture
 def comment_id(comment):
     return comment.id,
+
+
+@pytest.fixture
+def bulk_news():
+    today = datetime.today()
+    all_news = [
+        News(
+            title=f'Новость {index}',
+            text='Просто текст.',
+            date=today - timedelta(days=index),
+        )
+        for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
+    ]
+    News.objects.bulk_create(all_news)
