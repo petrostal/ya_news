@@ -31,8 +31,8 @@ def test_pages_availability_for_anonymous_user(client, name, args):
         ('news:delete', pytest.lazy_fixture('comment_id')),
     ),
 )
-def test_redirect_for_anonymous_clients(client, name, args):
-    login_url = reverse('users:login')
+def test_redirect_for_anonymous_clients(client, login_url, name, args):
+    # login_url = reverse('users:login')
     url = reverse(name, args=args)
     expected_url = f'{login_url}?next={url}'
     response = client.get(url)

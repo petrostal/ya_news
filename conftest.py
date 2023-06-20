@@ -2,6 +2,13 @@ import pytest
 
 from news.models import News, Comment
 
+from yanews.settings import LOGIN_URL
+
+
+@pytest.fixture
+def login_url():
+    return LOGIN_URL
+
 
 @pytest.fixture
 def author(django_user_model):
