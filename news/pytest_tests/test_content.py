@@ -1,8 +1,6 @@
-from django.conf import settings
 import pytest
-
+from django.conf import settings
 from django.urls import reverse
-
 
 HOME_URL = reverse('news:home')
 
@@ -29,7 +27,7 @@ def test_news_order(client, bulk_news):
     (
         (pytest.lazy_fixture('author_client'), True),
         (pytest.lazy_fixture('client'), False),
-    )
+    ),
 )
 def test_form_for_different_users(
     parametrized_client, form_in_context, detail_url
@@ -38,7 +36,7 @@ def test_form_for_different_users(
     assert ('form' in response.context) is form_in_context
 
 
-def test_comments_order(comment, client, detail_url):
+def test_comments_order(bulk_comment, client, detail_url):
     response = client.get(detail_url)
     assert 'news' in response.context
     news = response.context['news']

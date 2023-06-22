@@ -1,11 +1,11 @@
 # news/tests/test_routes.py
-from django.test import TestCase
 from http import HTTPStatus
-from django.urls import reverse
+
 from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import reverse
 
-from news.models import News, Comment
-
+from news.models import Comment, News
 
 User = get_user_model()
 

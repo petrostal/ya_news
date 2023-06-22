@@ -9,7 +9,7 @@ from django.urls import reverse
 from datetime import datetime, timedelta
 
 
-COMMENT_TEXT = 'Текст '
+COMMENT_TEXT = 'Comment text'
 
 
 @pytest.fixture
@@ -19,7 +19,7 @@ def login_url():
 
 @pytest.fixture
 def author(django_user_model):
-    return django_user_model.objects.create(username='Автор')
+    return django_user_model.objects.create(username='Author')
 
 
 @pytest.fixture
@@ -31,7 +31,7 @@ def author_client(author, client):
 @pytest.fixture
 def news():
     news = News.objects.create(
-        title='tit-le',
+        title='title',
         text='text',
     )
     return news
@@ -44,6 +44,15 @@ def news_id(news):
 
 @pytest.fixture
 def comment(news, author):
+    return Comment.objects.create(
+        news=news,
+        author=author,
+        text=COMMENT_TEXT
+    )
+
+
+@pytest.fixture
+def bulk_comment(news, author):
     now = timezone.now()
     for index in range(2):
         comment = Comment.objects.create(
@@ -53,7 +62,6 @@ def comment(news, author):
         )
         comment.created = now + timedelta(days=index)
         comment.save()
-    return Comment.objects.first()
 
 
 @pytest.fixture
@@ -63,7 +71,7 @@ def comment_id(comment):
 
 @pytest.fixture
 def comment_text():
-    return f'{COMMENT_TEXT}0'
+    return COMMENT_TEXT
 
 
 @pytest.fixture
@@ -76,8 +84,8 @@ def bulk_news():
     today = datetime.today()
     all_news = [
         News(
-            title=f'Новость {index}',
-            text='Просто текст.',
+            title=f'News {index}',
+            text='Simple text.',
             date=today - timedelta(days=index),
         )
         for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
