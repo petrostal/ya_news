@@ -1,8 +1,5 @@
 from django.conf import settings
-from http import HTTPStatus
 import pytest
-
-from pytest_django.asserts import assertRedirects
 
 from django.urls import reverse
 
@@ -10,14 +7,15 @@ from django.urls import reverse
 HOME_URL = reverse('news:home')
 
 
-@pytest.mark.django_db
+pytestmark = pytest.mark.django_db
+
+
 def test_news_count(client, bulk_news):
     response = client.get(HOME_URL)
     news_count = len(response.context['object_list'])
     assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
-@pytest.mark.django_db
 def test_news_order(client, bulk_news):
     response = client.get(HOME_URL)
     object_list = response.context['object_list']
@@ -26,7 +24,6 @@ def test_news_order(client, bulk_news):
     assert all_dates == sorted_dates
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize(
     'parametrized_client, form_in_context',
     (
@@ -34,12 +31,13 @@ def test_news_order(client, bulk_news):
         (pytest.lazy_fixture('client'), False),
     )
 )
-def test_form_for_different_users(parametrized_client, form_in_context, detail_url):
+def test_form_for_different_users(
+    parametrized_client, form_in_context, detail_url
+):
     response = parametrized_client.get(detail_url)
     assert ('form' in response.context) is form_in_context
 
 
-@pytest.mark.django_db
 def test_comments_order(comment, client, detail_url):
     response = client.get(detail_url)
     assert 'news' in response.context

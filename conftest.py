@@ -9,6 +9,9 @@ from django.urls import reverse
 from datetime import datetime, timedelta
 
 
+COMMENT_TEXT = 'Текст '
+
+
 @pytest.fixture
 def login_url():
     return settings.LOGIN_URL
@@ -46,7 +49,7 @@ def comment(news, author):
         comment = Comment.objects.create(
             news=news,
             author=author,
-            text=f'Tекст {index}',
+            text=f'{COMMENT_TEXT}{index}',
         )
         comment.created = now + timedelta(days=index)
         comment.save()
@@ -56,6 +59,16 @@ def comment(news, author):
 @pytest.fixture
 def comment_id(comment):
     return comment.id,
+
+
+@pytest.fixture
+def comment_text():
+    return f'{COMMENT_TEXT}0'
+
+
+@pytest.fixture
+def form_data(comment_text):
+    return {'text': comment_text}
 
 
 @pytest.fixture
@@ -75,3 +88,13 @@ def bulk_news():
 @pytest.fixture
 def detail_url(news_id):
     return reverse('news:detail', args=news_id)
+
+
+@pytest.fixture
+def edit_url(comment_id):
+    return reverse('news:edit', args=comment_id)
+
+
+@pytest.fixture
+def delete_url(comment_id):
+    return reverse('news:delete', args=comment_id)
